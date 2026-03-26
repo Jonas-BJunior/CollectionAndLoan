@@ -8,6 +8,19 @@ struct AddItemView: View {
     @State private var category: Category = .game
     @State private var platform = ""
     @State private var notes = ""
+    private let item: Item?
+    private let isEditing: Bool
+    
+    init(item: Item? = nil) {
+        self.item = item
+        self.isEditing = item != nil
+        if let item = item {
+            _title = State(initialValue: item.title)
+            _category = State(initialValue: item.category)
+            _platform = State(initialValue: item.platform ?? "")
+            _notes = State(initialValue: item.notes ?? "")
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -21,10 +34,19 @@ struct AddItemView: View {
                 TextField("Platform", text: $platform)
                 TextField("Notes", text: $notes)
             }
-            .navigationTitle("Add Item")
+            .navigationTitle(isEditing ? "Edit Item" : "Add Item")
             .navigationBarItems(trailing: Button("Save") {
-                let item = Item(title: title, category: category, platform: platform.isEmpty ? nil : platform, notes: notes.isEmpty ? nil : notes)
-                viewModel.addItem(item)
+                if isEditing, let item = item {
+                    var updatedItem = item
+                    updatedItem.title = title
+                    updatedItem.category = category
+                    updatedItem.platform = platform.isEmpty ? nil : platform
+                    updatedItem.notes = notes.isEmpty ? nil : notes
+                    viewModel.updateItem(updatedItem)
+                } else {
+                    let newItem = Item(title: title, category: category, platform: platform.isEmpty ? nil : platform, notes: notes.isEmpty ? nil : notes)
+                    viewModel.addItem(newItem)
+                }
                 dismiss()
             })
         }

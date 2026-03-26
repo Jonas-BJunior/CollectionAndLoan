@@ -28,4 +28,9 @@ class CollectionViewModel: ObservableObject {
         itemRepository.add(item)
         loadItems()
     }
+    
+    func updateItem(_ item: Item) {
+        itemRepository.update(item)
+        loadItems()
+    }
 }

@@ -4,6 +4,7 @@ struct ItemDetailView: View {
     let item: Item
     @StateObject private var viewModel: ItemDetailViewModel
     @State private var showingLend = false
+    @State private var showingEdit = false
     
     init(item: Item) {
         self.item = item
@@ -82,8 +83,14 @@ struct ItemDetailView: View {
             .padding()
         }
         .navigationTitle(item.title)
+        .navigationBarItems(trailing: Button("Edit") {
+            showingEdit = true
+        })
         .sheet(isPresented: $showingLend) {
             LoanFlowView(item: item, viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingEdit) {
+            AddItemView(item: item)
         }
     }
 }
