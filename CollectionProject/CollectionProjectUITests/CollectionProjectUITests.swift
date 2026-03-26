@@ -11,17 +11,7 @@ class CollectionProjectUITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // UI tests must launch the application that it tests.
-        let app = XCUIApplication()
-        app.launch()
-
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        XCTAssertTrue(true)
-    }
-
-    func testLendItemFlowOpens() throws {
+    func testLendItemToFriend() throws {
         let app = XCUIApplication()
         app.launch()
 
@@ -45,11 +35,24 @@ class CollectionProjectUITests: XCTestCase {
         let confirmLendButton = app.buttons["lendButton"]
         XCTAssertTrue(confirmLendButton.waitForExistence(timeout: 5), "Lend button should exist in the sheet")
 
-        // For this test, we'll skip friend selection for now and just verify the flow opens
-        // In a complete test, we'd select a friend and complete the loan
-        // But picker interaction in sheets can be tricky in UI tests
+        // Select a friend from the picker using accessibility identifier only.
+        let friendPicker = app.descendants(matching: .any)["friendPicker"]
+        XCTAssertTrue(friendPicker.waitForExistence(timeout: 5), "Friend picker should exist")
+        friendPicker.tap()
 
-        // Tap the lend button (without friend selected, it should still dismiss)
+        // Wait for picker options and select "Alice"
+        let aliceOption = app.buttons["Alice"]
+        if aliceOption.waitForExistence(timeout: 3) {
+            aliceOption.tap()
+        } else {
+            // Fallback: try static text
+            let aliceStatic = app.staticTexts["Alice"]
+            if aliceStatic.waitForExistence(timeout: 3) {
+                aliceStatic.tap()
+            }
+        }
+
+        // Now tap the lend button to complete the loan
         confirmLendButton.tap()
 
         // Verify we are back to ItemDetailView
