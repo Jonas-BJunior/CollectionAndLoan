@@ -9,13 +9,14 @@ struct LoanFlowView: View {
     @State private var loanDate = Date()
     @State private var returnDate: Date?
     @State private var returnDateValue = Date()
-    
+    @State private var friends: [Friend] = []
+
     var body: some View {
         NavigationView {
             Form {
                 Picker(NSLocalizedString("Select Friend", comment: "Picker label"), selection: $selectedFriend) {
                     Text(NSLocalizedString("Select Friend", comment: "Picker placeholder")).tag(Friend?.none)
-                    ForEach(AppDependencies.friendRepository.getAll()) { friend in
+                    ForEach(friends) { friend in
                         Text(friend.name).tag(friend as Friend?)
                     }
                 }
@@ -38,6 +39,9 @@ struct LoanFlowView: View {
                 }
             }
             .navigationTitle("Lend \(item.title)")
+            .task {
+                friends = (try? await AppDependencies.friendService.getAll()) ?? []
+            }
             .navigationBarItems(trailing: Button(NSLocalizedString("Lend", comment: "Button")) {
                 if let friend = selectedFriend {
                     viewModel.lendItem(to: friend, loanDate: loanDate, returnDate: returnDate)

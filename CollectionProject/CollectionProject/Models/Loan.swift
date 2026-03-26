@@ -1,7 +1,7 @@
 import Foundation
 
-struct Loan: Identifiable {
-    let id = UUID()
+struct Loan: Identifiable, Codable {
+    var id: UUID = UUID()
     var itemId: UUID
     var friendId: UUID
     var loanDate: Date

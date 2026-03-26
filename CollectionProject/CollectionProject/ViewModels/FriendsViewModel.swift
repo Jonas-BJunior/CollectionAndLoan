@@ -1,32 +1,61 @@
 import Foundation
 import Combine
 
+@MainActor
 class FriendsViewModel: ObservableObject {
     @Published var friends: [Friend] = []
-    
-    private let friendRepository: FriendRepository
-    
-    init() {
-        self.friendRepository = AppDependencies.friendRepository
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+
+    private let friendService: FriendServiceProtocol
+
+    init(friendService: FriendServiceProtocol = AppDependencies.friendService) {
+        self.friendService = friendService
         loadFriends()
     }
-    
+
     func loadFriends() {
-        friends = friendRepository.getAll()
+        isLoading = true
+        Task {
+            do {
+                friends = try await friendService.getAll()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isLoading = false
+        }
     }
-    
+
     func addFriend(_ friend: Friend) {
-        friendRepository.add(friend)
-        loadFriends()
+        Task {
+            do {
+                try await friendService.add(friend)
+                friends = try await friendService.getAll()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
-    
+
     func updateFriend(_ friend: Friend) {
-        friendRepository.update(friend)
-        loadFriends()
+        Task {
+            do {
+                try await friendService.update(friend)
+                friends = try await friendService.getAll()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
-    
+
     func removeFriend(_ friend: Friend) {
-        friendRepository.remove(friend)
-        loadFriends()
+        Task {
+            do {
+                try await friendService.remove(friend)
+                friends = try await friendService.getAll()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }

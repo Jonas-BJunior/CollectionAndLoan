@@ -1,7 +1,22 @@
 import Foundation
 
+@MainActor
 class AppDependencies {
-    static let itemRepository = ItemRepository()
-    static let friendRepository = FriendRepository()
-    static let loanRepository = LoanRepository()
+
+    // MARK: - Feature flag
+    // Set to `false` when the real API is ready.
+    static let useMockServices: Bool = true
+
+    // MARK: - Services
+    static let itemService: ItemServiceProtocol = useMockServices
+        ? MockItemService()
+        : ItemAPIService()
+
+    static let friendService: FriendServiceProtocol = useMockServices
+        ? MockFriendService()
+        : FriendAPIService()
+
+    static let loanService: LoanServiceProtocol = useMockServices
+        ? MockLoanService()
+        : LoanAPIService()
 }
