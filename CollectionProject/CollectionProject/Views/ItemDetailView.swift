@@ -5,6 +5,7 @@ struct ItemDetailView: View {
     @StateObject private var viewModel: ItemDetailViewModel
     @State private var showingLend = false
     @State private var showingEdit = false
+    @Environment(\.presentationMode) var presentationMode
     
     init(item: Item) {
         self.item = item
@@ -91,6 +92,14 @@ struct ItemDetailView: View {
         }
         .sheet(isPresented: $showingEdit) {
             AddItemView(item: item)
+        }
+        .onChange(of: viewModel.itemDeleted) { deleted in
+            if deleted {
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ItemDeleted"))) { _ in
+            presentationMode.wrappedValue.dismiss()
         }
     }
 }

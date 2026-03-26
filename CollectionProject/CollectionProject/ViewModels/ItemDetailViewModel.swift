@@ -4,6 +4,7 @@ import Combine
 class ItemDetailViewModel: ObservableObject {
     @Published var item: Item
     @Published var loans: [Loan] = []
+    @Published var itemDeleted = false
     
     private let itemRepository: ItemRepository
     private let loanRepository: LoanRepository

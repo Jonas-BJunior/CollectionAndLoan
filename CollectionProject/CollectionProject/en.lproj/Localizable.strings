@@ -13,6 +13,10 @@
 "Save" = "Save";
 "Delete" = "Delete";
 
+/* Alerts */
+"Delete Item" = "Delete Item";
+"Are you sure you want to delete this item? This action cannot be undone." = "Are you sure you want to delete this item? This action cannot be undone.";
+
 /* Forms */
 "Title" = "Title";
 "Category" = "Category";

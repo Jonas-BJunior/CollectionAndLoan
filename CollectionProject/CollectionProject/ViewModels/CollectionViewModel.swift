@@ -33,4 +33,9 @@ class CollectionViewModel: ObservableObject {
         itemRepository.update(item)
         loadItems()
     }
+    
+    func deleteItem(_ item: Item) {
+        itemRepository.delete(item)
+        loadItems()
+    }
 }

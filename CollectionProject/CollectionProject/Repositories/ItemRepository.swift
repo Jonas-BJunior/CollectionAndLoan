@@ -27,11 +27,11 @@ class ItemRepository {
         }
     }
     
-    func get(by id: UUID) -> Item? {
-        return items.first { $0.id == id }
-    }
-    
     func delete(_ item: Item) {
         items.removeAll { $0.id == item.id }
+    }
+    
+    func get(by id: UUID) -> Item? {
+        return items.first { $0.id == id }
     }
 }
