@@ -33,6 +33,42 @@ final class ItemAPIService: ItemServiceProtocol {
         let notes: String?
         let coverImageUrl: String?
         let status: ItemStatus
+
+        private enum CodingKeys: String, CodingKey {
+            case title
+            case category
+            case platform
+            case notes
+            case coverImageUrl
+            case status
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(title, forKey: .title)
+            try container.encode(category, forKey: .category)
+
+            // Encode explicit null so API can clear previously persisted values on update.
+            if let platform {
+                try container.encode(platform, forKey: .platform)
+            } else {
+                try container.encodeNil(forKey: .platform)
+            }
+
+            if let notes {
+                try container.encode(notes, forKey: .notes)
+            } else {
+                try container.encodeNil(forKey: .notes)
+            }
+
+            if let coverImageUrl {
+                try container.encode(coverImageUrl, forKey: .coverImageUrl)
+            } else {
+                try container.encodeNil(forKey: .coverImageUrl)
+            }
+
+            try container.encode(status, forKey: .status)
+        }
     }
 
     private let client: APIClient
