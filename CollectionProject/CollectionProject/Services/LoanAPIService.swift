@@ -1,8 +1,45 @@
 import Foundation
 
 /// Communicates with the real REST API for loans.
-/// Replace the TODO comments with actual endpoint paths when the API is ready.
 final class LoanAPIService: LoanServiceProtocol {
+
+    private struct ListResponse<T: Decodable>: Decodable {
+        let data: [T]
+    }
+
+    private struct SingleResponse<T: Decodable>: Decodable {
+        let data: T
+    }
+
+    private struct LoanDTO: Decodable {
+        let id: Int
+        let itemId: Int
+        let friendId: Int
+        let loanDate: Date
+        let expectedReturnDate: Date?
+        let returnedAt: Date?
+    }
+
+    private struct LoanPayload: Encodable {
+        let loan: LoanAttributes
+    }
+
+    private struct LoanAttributes: Encodable {
+        let itemId: Int
+        let friendId: Int
+        let loanDate: String
+        let expectedReturnDate: String?
+    }
+
+    private struct LoanUpdatePayload: Encodable {
+        let loan: LoanUpdateAttributes
+    }
+
+    private struct LoanUpdateAttributes: Encodable {
+        let expectedReturnDate: String?
+    }
+
+    private struct EmptyBody: Encodable {}
 
     private let client: APIClient
 
@@ -11,37 +48,86 @@ final class LoanAPIService: LoanServiceProtocol {
     }
 
     func getAll() async throws -> [Loan] {
-        // TODO: confirm endpoint path with API team
-        return try await client.get("/loans")
+        let response: ListResponse<LoanDTO> = try await client.get("loans")
+        return response.data.map(mapToDomain)
     }
 
     func get(by id: UUID) async throws -> Loan? {
-        // TODO: confirm endpoint path with API team
-        return try await client.get("/loans/\(id.uuidString)")
+        guard let apiId = APIIDBridge.apiId(from: id) else { return nil }
+        let response: SingleResponse<LoanDTO> = try await client.get("loans/\(apiId)")
+        return mapToDomain(response.data)
     }
 
     func getLoans(for itemId: UUID) async throws -> [Loan] {
-        // TODO: confirm endpoint path with API team
-        return try await client.get("/loans?itemId=\(itemId.uuidString)")
+        guard let apiId = APIIDBridge.apiId(from: itemId) else { return [] }
+        let response: ListResponse<LoanDTO> = try await client.get("loans?item_id=\(apiId)")
+        return response.data.map(mapToDomain)
     }
 
     func getLoansByFriend(for friendId: UUID) async throws -> [Loan] {
-        // TODO: confirm endpoint path with API team
-        return try await client.get("/loans?friendId=\(friendId.uuidString)")
+        guard let apiId = APIIDBridge.apiId(from: friendId) else { return [] }
+        let response: ListResponse<LoanDTO> = try await client.get("loans?friend_id=\(apiId)")
+        return response.data.map(mapToDomain)
     }
 
     func add(_ loan: Loan) async throws {
-        // TODO: confirm endpoint path with API team
-        let _: Loan = try await client.post("/loans", body: loan)
+        guard let itemApiId = APIIDBridge.apiId(from: loan.itemId),
+              let friendApiId = APIIDBridge.apiId(from: loan.friendId) else {
+            throw ServiceError.notFound
+        }
+
+        let payload = LoanPayload(
+            loan: LoanAttributes(
+                itemId: itemApiId,
+                friendId: friendApiId,
+                loanDate: formatDateOnly(loan.loanDate),
+                expectedReturnDate: loan.returnDate.map(formatDateOnly)
+            )
+        )
+
+        let _: SingleResponse<LoanDTO> = try await client.post("loans", body: payload)
     }
 
     func update(_ loan: Loan) async throws {
-        // TODO: confirm endpoint path with API team
-        let _: Loan = try await client.put("/loans/\(loan.id.uuidString)", body: loan)
+        guard let loanApiId = APIIDBridge.apiId(from: loan.id) else {
+            throw ServiceError.notFound
+        }
+
+        if loan.returnDate != nil {
+            let _: SingleResponse<LoanDTO> = try await client.post("loans/\(loanApiId)/return_item", body: EmptyBody())
+        } else {
+            let payload = LoanUpdatePayload(
+                loan: LoanUpdateAttributes(expectedReturnDate: nil)
+            )
+            let _: SingleResponse<LoanDTO> = try await client.put("loans/\(loanApiId)", body: payload)
+        }
     }
 
     func delete(_ loan: Loan) async throws {
-        // TODO: confirm endpoint path with API team
-        try await client.delete("/loans/\(loan.id.uuidString)")
+        guard let loanApiId = APIIDBridge.apiId(from: loan.id) else {
+            throw ServiceError.notFound
+        }
+
+        try await client.delete("loans/\(loanApiId)")
+    }
+
+    private func mapToDomain(_ dto: LoanDTO) -> Loan {
+        var loan = Loan(
+            itemId: APIIDBridge.uuid(from: dto.itemId),
+            friendId: APIIDBridge.uuid(from: dto.friendId),
+            loanDate: dto.loanDate,
+            returnDate: dto.returnedAt ?? dto.expectedReturnDate
+        )
+        loan.id = APIIDBridge.uuid(from: dto.id)
+        return loan
+    }
+
+    private func formatDateOnly(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
 }

@@ -7,8 +7,8 @@ final class APIClient {
     static let shared = APIClient()
 
     // MARK: - Configuration
-    // TODO: Replace with your actual base URL when the API is ready.
-    let baseURL: URL = URL(string: "https://api.yourdomain.com/v1")!
+    // Local backend URL for iOS Simulator.
+    let baseURL: URL = URL(string: "http://127.0.0.1:3000/api/v1/")!
 
     private let session: URLSession
     private let decoder: JSONDecoder
@@ -19,7 +19,30 @@ final class APIClient {
 
         decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+
+            let isoFormatter = ISO8601DateFormatter()
+            if let date = isoFormatter.date(from: dateString) {
+                return date
+            }
+
+            let dayFormatter = DateFormatter()
+            dayFormatter.calendar = Calendar(identifier: .iso8601)
+            dayFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dayFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+            dayFormatter.dateFormat = "yyyy-MM-dd"
+
+            if let date = dayFormatter.date(from: dateString) {
+                return date
+            }
+
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid date format: \(dateString)"
+            )
+        }
 
         encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -53,7 +76,18 @@ final class APIClient {
 
     func delete(_ path: String) async throws {
         let request = try buildRequest(path: path, method: "DELETE")
-        let (_, response) = try await session.data(for: request)
+        logRequest(request)
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            logResponse(data: nil, response: nil, error: error, for: request)
+            throw ServiceError.networkError(error)
+        }
+
+        logResponse(data: data, response: response, error: nil, for: request)
         try validateStatus(response)
     }
 
@@ -66,8 +100,11 @@ final class APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        // TODO: Add Authorization header here when auth is ready:
-        // request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        if let token = AppDependencies.apiBearerToken, !token.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
         return request
     }
 
@@ -80,14 +117,20 @@ final class APIClient {
     }
 
     private func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
+        logRequest(request)
+
         let data: Data
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
         } catch {
+            logResponse(data: nil, response: nil, error: error, for: request)
             throw ServiceError.networkError(error)
         }
+
+        logResponse(data: data, response: response, error: nil, for: request)
         try validateStatus(response)
+
         do {
             return try decoder.decode(T.self, from: data)
         } catch {
@@ -103,5 +146,48 @@ final class APIClient {
         case 404:       throw ServiceError.notFound
         default:        throw ServiceError.serverError(statusCode: http.statusCode)
         }
+    }
+
+    private func logRequest(_ request: URLRequest) {
+#if DEBUG
+        print("\n[API] REQUEST ------------------------------")
+        print("[API] \(request.httpMethod ?? "-") \(request.url?.absoluteString ?? "-")")
+
+        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
+            print("[API] Headers: \(headers)")
+        }
+
+        if let body = request.httpBody,
+           !body.isEmpty,
+           let bodyString = String(data: body, encoding: .utf8) {
+            print("[API] Body: \(bodyString)")
+        }
+#endif
+    }
+
+    private func logResponse(data: Data?, response: URLResponse?, error: Error?, for request: URLRequest) {
+#if DEBUG
+        print("[API] RESPONSE -----------------------------")
+        print("[API] \(request.httpMethod ?? "-") \(request.url?.absoluteString ?? "-")")
+
+        if let http = response as? HTTPURLResponse {
+            print("[API] Status: \(http.statusCode)")
+            print("[API] Response Headers: \(http.allHeaderFields)")
+        }
+
+        if let error {
+            print("[API] Error: \(error.localizedDescription)")
+        }
+
+        if let data,
+           !data.isEmpty,
+           let responseBody = String(data: data, encoding: .utf8) {
+            print("[API] Response Body: \(responseBody)")
+        } else {
+            print("[API] Response Body: <empty>")
+        }
+
+        print("[API] END ----------------------------------\n")
+#endif
     }
 }
