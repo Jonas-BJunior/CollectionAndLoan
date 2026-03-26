@@ -2,6 +2,43 @@ import Foundation
 import Combine
 
 @MainActor
+final class FriendFormViewModel: ObservableObject {
+    @Published var name: String
+    @Published var email: String
+    @Published var didAttemptSave = false
+
+    init(friend: Friend? = nil) {
+        self.name = friend?.name ?? ""
+        self.email = friend?.email ?? ""
+    }
+
+    var shouldShowValidation: Bool {
+        didAttemptSave || !name.isEmpty || !email.isEmpty
+    }
+
+    var nameErrorMessage: String? {
+        FriendFormValidator.validateName(name)
+    }
+
+    var emailErrorMessage: String? {
+        FriendFormValidator.validateEmail(email)
+    }
+
+    var isFormValid: Bool {
+        nameErrorMessage == nil && emailErrorMessage == nil
+    }
+
+    var normalizedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var normalizedEmail: String? {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+}
+
+@MainActor
 class FriendsViewModel: ObservableObject {
     @Published var friends: [Friend] = []
     @Published var isLoading: Bool = false

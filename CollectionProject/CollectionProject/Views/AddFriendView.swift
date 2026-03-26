@@ -4,39 +4,78 @@ struct AddFriendView: View {
     @EnvironmentObject var viewModel: FriendsViewModel
     @Environment(\.dismiss) var dismiss
     
-    @State private var name = ""
-    @State private var email = ""
+    @StateObject private var formViewModel: FriendFormViewModel
+    @State private var didAttemptSave = false
     private let friend: Friend?
     private let isEditing: Bool
     
     init(friend: Friend? = nil) {
         self.friend = friend
         self.isEditing = friend != nil
-        if let friend = friend {
-            _name = State(initialValue: friend.name)
-            _email = State(initialValue: friend.email ?? "")
-        }
+        _formViewModel = StateObject(wrappedValue: FriendFormViewModel(friend: friend))
     }
     
     var body: some View {
         NavigationView {
             Form {
-                TextField(NSLocalizedString("Name", comment: "Field label"), text: $name)
-                TextField(NSLocalizedString("Email", comment: "Field label"), text: $email)
+                Section {
+                    TextField(NSLocalizedString("Name", comment: "Field label"), text: $formViewModel.name)
+                        .autocapitalization(.words)
+
+                    if shouldShowValidation, let nameErrorMessage {
+                        Text(nameErrorMessage)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+
+                Section {
+                    TextField(NSLocalizedString("Email", comment: "Field label"), text: $formViewModel.email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+
+                    if shouldShowValidation, let emailErrorMessage {
+                        Text(emailErrorMessage)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
             }
             .navigationTitle(isEditing ? NSLocalizedString("Edit Friend", comment: "Navigation title") : NSLocalizedString("Add Friend", comment: "Navigation title"))
             .navigationBarItems(trailing: Button(NSLocalizedString("Save", comment: "Button")) {
+                didAttemptSave = true
+                formViewModel.didAttemptSave = true
+                guard isFormValid else { return }
+
                 if isEditing, let friend = friend {
                     var updatedFriend = friend
-                    updatedFriend.name = name
-                    updatedFriend.email = email.isEmpty ? nil : email
+                    updatedFriend.name = formViewModel.normalizedName
+                    updatedFriend.email = formViewModel.normalizedEmail
                     viewModel.updateFriend(updatedFriend)
                 } else {
-                    let newFriend = Friend(name: name, email: email.isEmpty ? nil : email)
+                    let newFriend = Friend(name: formViewModel.normalizedName, email: formViewModel.normalizedEmail)
                     viewModel.addFriend(newFriend)
                 }
                 dismiss()
-            })
+            }
+            .disabled(!isFormValid))
         }
+    }
+
+    private var shouldShowValidation: Bool {
+        didAttemptSave || formViewModel.shouldShowValidation
+    }
+
+    private var isFormValid: Bool {
+        formViewModel.isFormValid
+    }
+
+    private var nameErrorMessage: String? {
+        formViewModel.nameErrorMessage
+    }
+
+    private var emailErrorMessage: String? {
+        formViewModel.emailErrorMessage
     }
 }
