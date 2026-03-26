@@ -6,15 +6,6 @@ struct CollectionView: View {
     
     var body: some View {
         VStack {
-            Picker("", selection: $viewModel.selectedCategory) {
-                Text(NSLocalizedString("All", comment: "Category filter")).tag(Category?.none)
-                ForEach(Category.allCases) { category in
-                    Text(NSLocalizedString(category.rawValue, comment: "Category name")).tag(category as Category?)
-                }
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-            
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
                     ForEach(viewModel.filteredItems) { item in
@@ -40,6 +31,34 @@ struct CollectionView: View {
             viewModel.loadItems()
         }
         .navigationTitle(NSLocalizedString("My Collections", comment: "Navigation title"))
+        .toolbar {
+            Menu {
+                Button {
+                    viewModel.selectedCategory = nil
+                } label: {
+                    HStack {
+                        if viewModel.selectedCategory == nil {
+                            Image(systemName: "checkmark")
+                        }
+                        Text(NSLocalizedString("All", comment: "Category filter"))
+                    }
+                }
+                ForEach(Category.allCases) { category in
+                    Button {
+                        viewModel.selectedCategory = category
+                    } label: {
+                        HStack {
+                            if viewModel.selectedCategory == category {
+                                Image(systemName: "checkmark")
+                            }
+                            Text(NSLocalizedString(category.rawValue, comment: "Category name"))
+                        }
+                    }
+                }
+            } label: {
+                Image(systemName: "line.horizontal.3.decrease.circle")
+            }
+        }
         .sheet(isPresented: $showingAddItem) {
             AddItemView()
         }
