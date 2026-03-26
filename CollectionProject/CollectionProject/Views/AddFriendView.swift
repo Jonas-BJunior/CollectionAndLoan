@@ -5,7 +5,6 @@ struct AddFriendView: View {
     @Environment(\.dismiss) var dismiss
     
     @StateObject private var formViewModel: FriendFormViewModel
-    @State private var didAttemptSave = false
     private let friend: Friend?
     private let isEditing: Bool
     
@@ -44,7 +43,6 @@ struct AddFriendView: View {
             }
             .navigationTitle(isEditing ? NSLocalizedString("Edit Friend", comment: "Navigation title") : NSLocalizedString("Add Friend", comment: "Navigation title"))
             .navigationBarItems(trailing: Button(NSLocalizedString("Save", comment: "Button")) {
-                didAttemptSave = true
                 formViewModel.didAttemptSave = true
                 guard isFormValid else { return }
 
@@ -64,7 +62,7 @@ struct AddFriendView: View {
     }
 
     private var shouldShowValidation: Bool {
-        didAttemptSave || formViewModel.shouldShowValidation
+        formViewModel.shouldShowValidation
     }
 
     private var isFormValid: Bool {

@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 @MainActor
-final class FriendFormViewModel: ObservableObject {
+final class FriendFormViewModel: FormStateValidating {
     @Published var name: String
     @Published var email: String
     @Published var didAttemptSave = false
@@ -12,8 +12,8 @@ final class FriendFormViewModel: ObservableObject {
         self.email = friend?.email ?? ""
     }
 
-    var shouldShowValidation: Bool {
-        didAttemptSave || !name.isEmpty || !email.isEmpty
+    var hasAnyUserInput: Bool {
+        !name.isEmpty || !email.isEmpty
     }
 
     var nameErrorMessage: String? {
@@ -29,12 +29,11 @@ final class FriendFormViewModel: ObservableObject {
     }
 
     var normalizedName: String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines)
+        FormValueNormalizer.trimmed(name)
     }
 
     var normalizedEmail: String? {
-        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? nil : trimmed
+        FormValueNormalizer.nilIfEmpty(email)
     }
 }
 
