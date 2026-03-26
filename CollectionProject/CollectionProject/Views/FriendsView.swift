@@ -9,13 +9,15 @@ struct FriendsView: View {
         VStack {
             List {
                 ForEach(viewModel.friends) { friend in
-                    VStack(alignment: .leading) {
-                        Text(friend.name)
-                            .font(.headline)
-                        if let email = friend.email {
-                            Text(email)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                    NavigationLink(destination: FriendDetailView(friend: friend)) {
+                        VStack(alignment: .leading) {
+                            Text(friend.name)
+                                .font(.headline)
+                            if let email = friend.email {
+                                Text(email)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                     .swipeActions(edge: .trailing) {
