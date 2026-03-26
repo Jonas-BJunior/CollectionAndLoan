@@ -26,13 +26,13 @@ struct FriendDetailView: View {
                 }
                 
                 if viewModel.activeLoans.isEmpty {
-                    Text("No items currently lent to \(friend.name).")
+                    Text(String(format: NSLocalizedString("No items currently lent to %@", comment: "Message"), friend.name))
                         .font(.body)
                         .foregroundColor(.secondary)
                         .padding(.top)
                 } else {
                     VStack(alignment: .leading) {
-                        Text("Lent Items")
+                        Text(NSLocalizedString("Lent Items", comment: "Section title"))
                             .font(.headline)
                             .padding(.top)
                         
@@ -41,15 +41,15 @@ struct FriendDetailView: View {
                                 VStack(alignment: .leading) {
                                     Text(item.title)
                                         .font(.headline)
-                                    Text("Lent on: \(loan.loanDate, style: .date)")
+                                    Text(String(format: NSLocalizedString("Lent on %@", comment: "Date label"), loan.loanDate.formatted(date: .abbreviated, time: .omitted)))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     if let returnDate = loan.returnDate {
-                                        Text("Return by: \(returnDate, style: .date)")
+                                        Text(String(format: NSLocalizedString("Return by %@", comment: "Date label"), returnDate.formatted(date: .abbreviated, time: .omitted)))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                     } else {
-                                        Text("Ongoing loan")
+                                        Text(NSLocalizedString("Ongoing loan", comment: "Loan status"))
                                             .font(.subheadline)
                                             .foregroundColor(.orange)
                                     }

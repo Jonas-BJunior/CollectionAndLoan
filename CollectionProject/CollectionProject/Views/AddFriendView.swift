@@ -21,11 +21,11 @@ struct AddFriendView: View {
     var body: some View {
         NavigationView {
             Form {
-                TextField("Name", text: $name)
-                TextField("Email", text: $email)
+                TextField(NSLocalizedString("Name", comment: "Field label"), text: $name)
+                TextField(NSLocalizedString("Email", comment: "Field label"), text: $email)
             }
-            .navigationTitle(isEditing ? "Edit Friend" : "Add Friend")
-            .navigationBarItems(trailing: Button("Save") {
+            .navigationTitle(isEditing ? NSLocalizedString("Edit Friend", comment: "Navigation title") : NSLocalizedString("Add Friend", comment: "Navigation title"))
+            .navigationBarItems(trailing: Button(NSLocalizedString("Save", comment: "Button")) {
                 if isEditing, let friend = friend {
                     var updatedFriend = friend
                     updatedFriend.name = name

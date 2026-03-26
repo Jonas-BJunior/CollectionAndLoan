@@ -39,7 +39,7 @@ struct FriendsView: View {
             .buttonStyle(.borderedProminent)
             .padding()
         }
-        .navigationTitle("Friends")
+        .navigationTitle(NSLocalizedString("Friends", comment: "Navigation title"))
         .sheet(isPresented: $showingAddFriend) {
             AddFriendView()
         }

@@ -1,0 +1,54 @@
+/* Portuguese Brazilian */
+
+/* Tab Bar */
+"Collection" = "Coleção";
+"Friends" = "Amigos";
+
+/* Buttons */
+"Add Item" = "Adicionar Item";
+"Add Friend" = "Adicionar Amigo";
+"Lend Item" = "Emprestar Item";
+"Mark as Returned" = "Marcar como Devolvido";
+"Edit" = "Editar";
+"Save" = "Salvar";
+"Delete" = "Excluir";
+
+/* Forms */
+"Title" = "Título";
+"Category" = "Categoria";
+"Platform" = "Plataforma";
+"Notes" = "Notas";
+"Name" = "Nome";
+"Email" = "Email";
+
+/* Loan */
+"Select Friend" = "Selecionar Amigo";
+"Loan Date" = "Data do Empréstimo";
+"Has Return Date" = "Tem Data de Devolução";
+"Return Date" = "Data de Devolução";
+"Lend" = "Emprestar";
+
+/* Item Details */
+"Platform" = "Plataforma";
+"Notes" = "Notas";
+"Status" = "Status";
+"available" = "Disponível";
+"lent" = "Emprestado";
+
+/* History */
+"Loan History" = "Histórico de Empréstimos";
+"Ongoing" = "Em Andamento";
+
+/* Messages */
+"No items currently lent to %@" = "Nenhum item atualmente emprestado para %@.";
+
+/* Categories */
+"game" = "Jogo";
+"book" = "Livro";
+"movie" = "Filme";
+"boardgame" = "Jogo de Tabuleiro";
+"other" = "Outros";
+"All" = "Todos";
+
+/* Navigation */
+"My Collections" = "Minhas Coleções";

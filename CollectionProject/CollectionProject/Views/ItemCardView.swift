@@ -17,11 +17,11 @@ struct ItemCardView: View {
                 .lineLimit(1)
                 .multilineTextAlignment(.center)
             
-            Text(item.category.rawValue.capitalized)
+            Text(NSLocalizedString(item.category.rawValue, comment: "Category name"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            Text(item.status.rawValue.capitalized)
+            Text(NSLocalizedString(item.status.rawValue, comment: "Status"))
                 .font(.caption)
                 .foregroundColor(item.status == .available ? .green : .red)
                 .padding(.top, 4)

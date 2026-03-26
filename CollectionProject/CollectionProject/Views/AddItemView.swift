@@ -25,17 +25,17 @@ struct AddItemView: View {
     var body: some View {
         NavigationView {
             Form {
-                TextField("Title", text: $title)
-                Picker("Category", selection: $category) {
+                TextField(NSLocalizedString("Title", comment: "Field label"), text: $title)
+                Picker(NSLocalizedString("Category", comment: "Field label"), selection: $category) {
                     ForEach(Category.allCases) { cat in
-                        Text(cat.rawValue.capitalized).tag(cat)
+                        Text(NSLocalizedString(cat.rawValue, comment: "Category name")).tag(cat)
                     }
                 }
-                TextField("Platform", text: $platform)
-                TextField("Notes", text: $notes)
+                TextField(NSLocalizedString("Platform", comment: "Field label"), text: $platform)
+                TextField(NSLocalizedString("Notes", comment: "Field label"), text: $notes)
             }
-            .navigationTitle(isEditing ? "Edit Item" : "Add Item")
-            .navigationBarItems(trailing: Button("Save") {
+            .navigationTitle(isEditing ? NSLocalizedString("Edit Item", comment: "Navigation title") : NSLocalizedString("Add Item", comment: "Navigation title"))
+            .navigationBarItems(trailing: Button(NSLocalizedString("Save", comment: "Button")) {
                 if isEditing, let item = item {
                     var updatedItem = item
                     updatedItem.title = title

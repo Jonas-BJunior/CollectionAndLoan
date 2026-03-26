@@ -1,0 +1,54 @@
+/* English */
+
+/* Tab Bar */
+"Collection" = "Collection";
+"Friends" = "Friends";
+
+/* Buttons */
+"Add Item" = "Add Item";
+"Add Friend" = "Add Friend";
+"Lend Item" = "Lend Item";
+"Mark as Returned" = "Mark as Returned";
+"Edit" = "Edit";
+"Save" = "Save";
+"Delete" = "Delete";
+
+/* Forms */
+"Title" = "Title";
+"Category" = "Category";
+"Platform" = "Platform";
+"Notes" = "Notes";
+"Name" = "Name";
+"Email" = "Email";
+
+/* Loan */
+"Select Friend" = "Select Friend";
+"Loan Date" = "Loan Date";
+"Has Return Date" = "Has Return Date";
+"Return Date" = "Return Date";
+"Lend" = "Lend";
+
+/* Item Details */
+"Platform" = "Platform";
+"Notes" = "Notes";
+"Status" = "Status";
+"available" = "Available";
+"lent" = "Lent";
+
+/* History */
+"Loan History" = "Loan History";
+"Ongoing" = "Ongoing";
+
+/* Messages */
+"No items currently lent to %@" = "No items currently lent to %@.";
+
+/* Categories */
+"game" = "Game";
+"book" = "Book";
+"movie" = "Movie";
+"boardgame" = "Boardgame";
+"other" = "Other";
+"All" = "All";
+
+/* Navigation */
+"My Collections" = "My Collections";

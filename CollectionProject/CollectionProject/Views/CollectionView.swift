@@ -6,10 +6,10 @@ struct CollectionView: View {
     
     var body: some View {
         VStack {
-            Picker("Category", selection: $viewModel.selectedCategory) {
-                Text("All").tag(Category?.none)
+            Picker("", selection: $viewModel.selectedCategory) {
+                Text(NSLocalizedString("All", comment: "Category filter")).tag(Category?.none)
                 ForEach(Category.allCases) { category in
-                    Text(category.rawValue.capitalized).tag(category as Category?)
+                    Text(NSLocalizedString(category.rawValue, comment: "Category name")).tag(category as Category?)
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
@@ -27,7 +27,7 @@ struct CollectionView: View {
             }
             
             Button(action: { showingAddItem = true }) {
-                Text("Add Item")
+                Text(NSLocalizedString("Add Item", comment: "Button to add new item"))
                     .font(.headline)
                     .padding()
                     .background(Color.blue)
@@ -39,7 +39,7 @@ struct CollectionView: View {
         .onAppear {
             viewModel.loadItems()
         }
-        .navigationTitle("My Collection")
+        .navigationTitle(NSLocalizedString("My Collections", comment: "Navigation title"))
         .sheet(isPresented: $showingAddItem) {
             AddItemView()
         }

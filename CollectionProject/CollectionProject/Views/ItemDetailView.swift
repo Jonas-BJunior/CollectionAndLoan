@@ -24,33 +24,33 @@ struct ItemDetailView: View {
                     .font(.largeTitle)
                     .bold()
                 
-                Text(item.category.rawValue.capitalized)
+                Text(NSLocalizedString(item.category.rawValue, comment: "Category name"))
                     .font(.title2)
                     .foregroundColor(.secondary)
                 
                 if let platform = item.platform {
-                    Text("Platform: \(platform)")
+                    Text("\(NSLocalizedString("Platform", comment: "Label")): \(platform)")
                         .font(.body)
                 }
                 
                 if let notes = item.notes {
-                    Text("Notes: \(notes)")
+                    Text("\(NSLocalizedString("Notes", comment: "Label")): \(notes)")
                         .font(.body)
                 }
                 
-                Text("Status: \(viewModel.item.status.rawValue.capitalized)")
+                Text("\(NSLocalizedString("Status", comment: "Label")): \(NSLocalizedString(viewModel.item.status.rawValue, comment: "Status"))")
                     .font(.headline)
                     .foregroundColor(viewModel.item.status == .available ? .green : .red)
                 
                 if viewModel.item.status == .available {
-                    Button("Lend Item") {
+                    Button(NSLocalizedString("Lend Item", comment: "Button")) {
                         showingLend = true
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top)
                 } else {
                     if let currentLoan = viewModel.loans.first(where: { $0.returnDate == nil }) {
-                        Button("Mark as Returned") {
+                        Button(NSLocalizedString("Mark as Returned", comment: "Button")) {
                             viewModel.returnItem(loan: currentLoan)
                         }
                         .buttonStyle(.bordered)
@@ -60,7 +60,7 @@ struct ItemDetailView: View {
                 
                 if !viewModel.loans.isEmpty {
                     VStack(alignment: .leading) {
-                        Text("Loan History")
+                        Text(NSLocalizedString("Loan History", comment: "Section title"))
                             .font(.headline)
                             .padding(.top)
                         
@@ -72,7 +72,7 @@ struct ItemDetailView: View {
                                 if let returnDate = loan.returnDate {
                                     Text(" - \(returnDate, style: .date)")
                                 } else {
-                                    Text(" - Ongoing")
+                                    Text(" - \(NSLocalizedString("Ongoing", comment: "Loan status"))")
                                 }
                             }
                             .padding(.vertical, 4)

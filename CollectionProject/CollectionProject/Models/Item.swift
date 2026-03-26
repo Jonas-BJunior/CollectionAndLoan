@@ -11,7 +11,7 @@ struct Item: Identifiable {
 }
 
 enum Category: String, CaseIterable, Identifiable {
-    case game, book, movie, boardgame
+    case game, book, movie, boardgame, other
     
     var id: String { self.rawValue }
 }

@@ -13,27 +13,27 @@ struct LoanFlowView: View {
     var body: some View {
         NavigationView {
             Form {
-                Picker("Friend", selection: $selectedFriend) {
-                    Text("Select Friend").tag(Friend?.none)
+                Picker(NSLocalizedString("Select Friend", comment: "Picker label"), selection: $selectedFriend) {
+                    Text(NSLocalizedString("Select Friend", comment: "Picker placeholder")).tag(Friend?.none)
                     ForEach(AppDependencies.friendRepository.getAll()) { friend in
                         Text(friend.name).tag(friend as Friend?)
                     }
                 }
                 
-                DatePicker("Loan Date", selection: $loanDate, displayedComponents: .date)
+                DatePicker(NSLocalizedString("Loan Date", comment: "Date picker label"), selection: $loanDate, displayedComponents: .date)
                 
-                Toggle("Has Return Date", isOn: Binding(
+                Toggle(NSLocalizedString("Has Return Date", comment: "Toggle label"), isOn: Binding(
                     get: { returnDate != nil },
                     set: { if !$0 { returnDate = nil } else { returnDate = returnDateValue } }
                 ))
                 
                 if returnDate != nil {
-                    DatePicker("Return Date", selection: $returnDateValue, displayedComponents: .date)
+                    DatePicker(NSLocalizedString("Return Date", comment: "Date picker label"), selection: $returnDateValue, displayedComponents: .date)
                         .onChange(of: returnDateValue) { returnDate = $0 }
                 }
             }
             .navigationTitle("Lend \(item.title)")
-            .navigationBarItems(trailing: Button("Lend") {
+            .navigationBarItems(trailing: Button(NSLocalizedString("Lend", comment: "Button")) {
                 if let friend = selectedFriend {
                     viewModel.lendItem(to: friend, loanDate: loanDate, returnDate: returnDate)
                     dismiss()
