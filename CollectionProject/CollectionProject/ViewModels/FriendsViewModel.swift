@@ -45,9 +45,13 @@ class FriendsViewModel: ObservableObject {
 
     private let friendService: FriendServiceProtocol
 
-    init(friendService: FriendServiceProtocol = AppDependencies.friendService) {
+    init(friendService: FriendServiceProtocol) {
         self.friendService = friendService
         loadFriends()
+    }
+
+    convenience init() {
+        self.init(friendService: AppDependencies.friendService)
     }
 
     func loadFriends() {
