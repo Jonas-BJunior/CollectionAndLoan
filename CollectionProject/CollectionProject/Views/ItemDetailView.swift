@@ -93,7 +93,7 @@ struct ItemDetailView: View {
         .sheet(isPresented: $showingEdit) {
             AddItemView(item: item)
         }
-        .onChange(of: viewModel.itemDeleted) { deleted in
+        .onChange(of: viewModel.itemDeleted) { _, deleted in
             if deleted {
                 presentationMode.wrappedValue.dismiss()
             }

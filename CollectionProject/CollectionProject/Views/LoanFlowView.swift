@@ -29,7 +29,9 @@ struct LoanFlowView: View {
                 
                 if returnDate != nil {
                     DatePicker(NSLocalizedString("Return Date", comment: "Date picker label"), selection: $returnDateValue, displayedComponents: .date)
-                        .onChange(of: returnDateValue) { returnDate = $0 }
+                        .onChange(of: returnDateValue) { _, newValue in
+                            returnDate = newValue
+                        }
                 }
             }
             .navigationTitle("Lend \(item.title)")
