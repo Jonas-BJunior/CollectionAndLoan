@@ -13,6 +13,15 @@ class ItemRepository {
         ]
     }
     
+    func reset() {
+        items = [
+            Item(title: "The Witcher 3", category: .game, platform: "PC", notes: "Epic RPG"),
+            Item(title: "Dune", category: .book, notes: "Sci-fi classic"),
+            Item(title: "Inception", category: .movie, platform: "Blu-ray"),
+            Item(title: "Catan", category: .boardgame, notes: "Fun board game")
+        ]
+    }
+    
     func getAll() -> [Item] {
         return items
     }

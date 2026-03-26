@@ -11,6 +11,13 @@ class FriendRepository {
         ]
     }
     
+    func reset() {
+        friends = [
+            Friend(name: "Alice", email: "alice@example.com"),
+            Friend(name: "Bob", email: "bob@example.com")
+        ]
+    }
+    
     func getAll() -> [Friend] {
         return friends
     }

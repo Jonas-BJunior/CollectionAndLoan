@@ -3,6 +3,10 @@ import Foundation
 class LoanRepository {
     private var loans: [Loan] = []
     
+    func reset() {
+        loans = []
+    }
+    
     func getAll() -> [Loan] {
         return loans
     }
