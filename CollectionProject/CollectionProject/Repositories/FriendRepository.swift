@@ -25,6 +25,10 @@ class FriendRepository {
         }
     }
     
+    func remove(_ friend: Friend) {
+        friends.removeAll { $0.id == friend.id }
+    }
+    
     func get(by id: UUID) -> Friend? {
         return friends.first { $0.id == id }
     }

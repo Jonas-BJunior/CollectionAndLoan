@@ -19,4 +19,14 @@ class FriendsViewModel: ObservableObject {
         friendRepository.add(friend)
         loadFriends()
     }
+    
+    func updateFriend(_ friend: Friend) {
+        friendRepository.update(friend)
+        loadFriends()
+    }
+    
+    func removeFriend(_ friend: Friend) {
+        friendRepository.remove(friend)
+        loadFriends()
+    }
 }
