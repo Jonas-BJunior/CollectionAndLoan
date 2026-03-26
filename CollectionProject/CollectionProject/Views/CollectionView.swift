@@ -12,6 +12,7 @@ struct CollectionView: View {
                         NavigationLink(destination: ItemDetailView(item: item)) {
                             ItemCardView(item: item)
                         }
+                        .accessibilityIdentifier("item_\(item.id.uuidString)")
                     }
                 }
                 .padding()

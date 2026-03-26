@@ -19,13 +19,16 @@ struct LoanFlowView: View {
                         Text(friend.name).tag(friend as Friend?)
                     }
                 }
+                .accessibilityIdentifier("friendPicker")
                 
                 DatePicker(NSLocalizedString("Loan Date", comment: "Date picker label"), selection: $loanDate, displayedComponents: .date)
+                    .accessibilityIdentifier("loanDatePicker")
                 
                 Toggle(NSLocalizedString("Has Return Date", comment: "Toggle label"), isOn: Binding(
                     get: { returnDate != nil },
                     set: { if !$0 { returnDate = nil } else { returnDate = returnDateValue } }
                 ))
+                .accessibilityIdentifier("hasReturnDateToggle")
                 
                 if returnDate != nil {
                     DatePicker(NSLocalizedString("Return Date", comment: "Date picker label"), selection: $returnDateValue, displayedComponents: .date)
@@ -40,7 +43,8 @@ struct LoanFlowView: View {
                     viewModel.lendItem(to: friend, loanDate: loanDate, returnDate: returnDate)
                     dismiss()
                 }
-            })
+            }
+            .accessibilityIdentifier("lendButton"))
         }
     }
 }

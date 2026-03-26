@@ -49,6 +49,7 @@ struct ItemDetailView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top)
+                    .accessibilityIdentifier("lendItemButton")
                 } else {
                     if let currentLoan = viewModel.loans.first(where: { $0.returnDate == nil }) {
                         Button(NSLocalizedString("Mark as Returned", comment: "Button")) {

@@ -33,9 +33,10 @@ struct FriendsView: View {
                 }
             }
             
-            Button("Add Friend") {
+            Button(NSLocalizedString("Add Friend", comment: "Button label to add a friend")) {
                 showingAddFriend = true
             }
+            .accessibilityIdentifier("addFriendButton")
             .buttonStyle(.borderedProminent)
             .padding()
         }
