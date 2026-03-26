@@ -8,6 +8,7 @@ struct LoanFlowView: View {
     @State private var selectedFriend: Friend?
     @State private var loanDate = Date()
     @State private var returnDate: Date?
+    @State private var returnDateValue = Date()
     
     var body: some View {
         NavigationView {
@@ -23,11 +24,12 @@ struct LoanFlowView: View {
                 
                 Toggle("Has Return Date", isOn: Binding(
                     get: { returnDate != nil },
-                    set: { if !$0 { returnDate = nil } else { returnDate = Date() } }
+                    set: { if !$0 { returnDate = nil } else { returnDate = returnDateValue } }
                 ))
                 
                 if returnDate != nil {
-                    DatePicker("Return Date", selection: Binding($returnDate)!, displayedComponents: .date)
+                    DatePicker("Return Date", selection: $returnDateValue, displayedComponents: .date)
+                        .onChange(of: returnDateValue) { returnDate = $0 }
                 }
             }
             .navigationTitle("Lend \(item.title)")
