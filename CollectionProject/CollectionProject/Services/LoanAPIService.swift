@@ -93,7 +93,7 @@ final class LoanAPIService: LoanServiceProtocol {
             throw ServiceError.notFound
         }
 
-        if loan.returnDate != nil {
+        if loan.returnedAt != nil {
             let _: SingleResponse<LoanDTO> = try await client.post("loans/\(loanApiId)/return_item", body: EmptyBody())
         } else {
             let payload = LoanUpdatePayload(
@@ -116,7 +116,8 @@ final class LoanAPIService: LoanServiceProtocol {
             itemId: APIIDBridge.uuid(from: dto.itemId),
             friendId: APIIDBridge.uuid(from: dto.friendId),
             loanDate: dto.loanDate,
-            returnDate: dto.returnedAt ?? dto.expectedReturnDate
+            returnDate: dto.expectedReturnDate,
+            returnedAt: dto.returnedAt
         )
         loan.id = APIIDBridge.uuid(from: dto.id)
         return loan

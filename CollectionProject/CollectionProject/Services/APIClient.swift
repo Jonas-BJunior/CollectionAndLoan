@@ -23,7 +23,14 @@ final class APIClient {
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
 
+            let isoFormatterWithFractional = ISO8601DateFormatter()
+            isoFormatterWithFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = isoFormatterWithFractional.date(from: dateString) {
+                return date
+            }
+
             let isoFormatter = ISO8601DateFormatter()
+            isoFormatter.formatOptions = [.withInternetDateTime]
             if let date = isoFormatter.date(from: dateString) {
                 return date
             }

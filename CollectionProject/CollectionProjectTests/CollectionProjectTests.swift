@@ -498,12 +498,12 @@ class LoanIntegrationTests: XCTestCase {
         itemDetailVM.lendItem(to: friend, loanDate: Date(), returnDate: nil)
         try await Task.sleep(nanoseconds: 100_000_000)
 
-        let loan = itemDetailVM.loans.first { $0.returnDate == nil }!
+        let loan = itemDetailVM.loans.first { $0.returnedAt == nil }!
         itemDetailVM.returnItem(loan: loan)
         try await Task.sleep(nanoseconds: 100_000_000)
 
         let returned = itemDetailVM.loans.first { $0.id == loan.id }
-        XCTAssertNotNil(returned?.returnDate)
+        XCTAssertNotNil(returned?.returnedAt)
         XCTAssertEqual(itemDetailVM.item.status, .available)
     }
 

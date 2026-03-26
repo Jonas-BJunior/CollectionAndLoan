@@ -24,7 +24,7 @@ class FriendDetailViewModel: ObservableObject {
         Task {
             do {
                 let loans = try await loanService.getLoansByFriend(for: friend.id)
-                activeLoans = loans.filter { $0.returnDate == nil }
+                activeLoans = loans.filter { $0.returnedAt == nil }
                 try await loadItems(for: activeLoans)
             } catch {
                 errorMessage = error.localizedDescription

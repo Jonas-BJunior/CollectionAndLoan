@@ -51,7 +51,7 @@ struct ItemDetailView: View {
                     .padding(.top)
                     .accessibilityIdentifier("lendItemButton")
                 } else {
-                    if let currentLoan = viewModel.loans.first(where: { $0.returnDate == nil }) {
+                    if let currentLoan = viewModel.loans.first(where: { $0.returnedAt == nil }) {
                         Button(NSLocalizedString("Mark as Returned", comment: "Button")) {
                             viewModel.returnItem(loan: currentLoan)
                         }
@@ -71,10 +71,14 @@ struct ItemDetailView: View {
                                 Text(viewModel.getFriendName(for: loan))
                                 Spacer()
                                 Text(loan.loanDate, style: .date)
-                                if let returnDate = loan.returnDate {
-                                    Text(" - \(returnDate, style: .date)")
+                                if let returnedAt = loan.returnedAt {
+                                    Text(" - \(returnedAt, style: .date)")
                                 } else {
                                     Text(" - \(NSLocalizedString("Ongoing", comment: "Loan status"))")
+                                    if let expected = loan.returnDate {
+                                        Text("(\(expected, style: .date))")
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
                             .padding(.vertical, 4)

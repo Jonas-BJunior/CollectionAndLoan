@@ -8,6 +8,7 @@ class ItemDetailViewModel: ObservableObject {
     @Published var itemDeleted = false
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published private var friendNames: [UUID: String] = [:]
 
     private let itemService: ItemServiceProtocol
     private let loanService: LoanServiceProtocol
@@ -27,7 +28,9 @@ class ItemDetailViewModel: ObservableObject {
     func loadLoans() {
         Task {
             do {
-                loans = try await loanService.getLoans(for: item.id)
+                let fetchedLoans = try await loanService.getLoans(for: item.id)
+                loans = fetchedLoans
+                await preloadFriendNames(for: fetchedLoans)
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -44,7 +47,9 @@ class ItemDetailViewModel: ObservableObject {
                 if let updated = try await itemService.get(by: item.id) {
                     item = updated
                 }
-                loans = try await loanService.getLoans(for: item.id)
+                let fetchedLoans = try await loanService.getLoans(for: item.id)
+                loans = fetchedLoans
+                await preloadFriendNames(for: fetchedLoans)
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -55,11 +60,13 @@ class ItemDetailViewModel: ObservableObject {
         Task {
             do {
                 var updatedLoan = loan
-                updatedLoan.returnDate = Date()
+                updatedLoan.returnedAt = Date()
                 try await loanService.update(updatedLoan)
                 item.status = .available
                 try await itemService.update(item)
-                loans = try await loanService.getLoans(for: item.id)
+                let fetchedLoans = try await loanService.getLoans(for: item.id)
+                loans = fetchedLoans
+                await preloadFriendNames(for: fetchedLoans)
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -67,9 +74,7 @@ class ItemDetailViewModel: ObservableObject {
     }
 
     func getFriendName(for loan: Loan) -> String {
-        // Synchronous lookup from a locally cached list is not possible with async protocol.
-        // Use getFriendNameAsync(for:) for a proper async call, or cache friends in the ViewModel if needed.
-        return "Loading..."
+        return friendNames[loan.friendId] ?? "Unknown"
     }
 
     func getFriendNameAsync(for loan: Loan) async -> String {
@@ -78,5 +83,21 @@ class ItemDetailViewModel: ObservableObject {
         } catch {
             return "Unknown"
         }
+    }
+
+    private func preloadFriendNames(for loans: [Loan]) async {
+        let uniqueFriendIds = Set(loans.map { $0.friendId })
+        var updatedNames = friendNames
+
+        for friendId in uniqueFriendIds where updatedNames[friendId] == nil {
+            do {
+                let friend = try await friendService.get(by: friendId)
+                updatedNames[friendId] = friend?.name ?? "Unknown"
+            } catch {
+                updatedNames[friendId] = "Unknown"
+            }
+        }
+
+        friendNames = updatedNames
     }
 }
