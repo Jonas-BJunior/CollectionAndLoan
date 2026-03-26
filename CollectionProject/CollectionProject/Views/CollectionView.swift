@@ -36,6 +36,9 @@ struct CollectionView: View {
             }
             .padding()
         }
+        .onAppear {
+            viewModel.loadItems()
+        }
         .navigationTitle("My Collection")
         .sheet(isPresented: $showingAddItem) {
             AddItemView()

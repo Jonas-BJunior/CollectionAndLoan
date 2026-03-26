@@ -26,6 +26,7 @@ class ItemDetailViewModel: ObservableObject {
         loanRepository.add(loan)
         item.status = .lent
         itemRepository.update(item)
+        self.item = itemRepository.get(by: item.id) ?? item
         loadLoans()
     }
     

@@ -37,11 +37,11 @@ struct ItemDetailView: View {
                         .font(.body)
                 }
                 
-                Text("Status: \(item.status.rawValue.capitalized)")
+                Text("Status: \(viewModel.item.status.rawValue.capitalized)")
                     .font(.headline)
-                    .foregroundColor(item.status == .available ? .green : .red)
+                    .foregroundColor(viewModel.item.status == .available ? .green : .red)
                 
-                if item.status == .available {
+                if viewModel.item.status == .available {
                     Button("Lend Item") {
                         showingLend = true
                     }
