@@ -15,7 +15,9 @@ struct ItemCardView: View {
             Text(item.title)
                 .font(.headline)
                 .lineLimit(1)
+                .truncationMode(.tail)
                 .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
             
             Text(NSLocalizedString(item.category.rawValue, comment: "Category name"))
                 .font(.subheadline)

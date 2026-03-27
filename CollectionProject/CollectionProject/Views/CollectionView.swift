@@ -7,7 +7,7 @@ struct CollectionView: View {
     var body: some View {
         VStack {
             ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 16)], spacing: 16) {
                     ForEach(viewModel.filteredItems) { item in
                         NavigationLink(destination: ItemDetailView(item: item)) {
                             ItemCardView(item: item)
