@@ -17,7 +17,6 @@ class FriendDetailViewModel: ObservableObject {
         self.friend = friend
         self.loanService = loanService
         self.itemService = itemService
-        loadActiveLoans()
     }
 
     func loadActiveLoans() {

@@ -12,7 +12,6 @@ class CollectionViewModel: ObservableObject {
 
     init(itemService: ItemServiceProtocol = AppDependencies.itemService) {
         self.itemService = itemService
-        loadItems()
     }
 
     func loadItems() {

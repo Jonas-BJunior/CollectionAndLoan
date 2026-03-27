@@ -157,44 +157,68 @@ final class APIClient {
 
     private func logRequest(_ request: URLRequest) {
 #if DEBUG
-        print("\n[API] REQUEST ------------------------------")
-        print("[API] \(request.httpMethod ?? "-") \(request.url?.absoluteString ?? "-")")
+        let method = request.httpMethod ?? "-"
+        let url = request.url?.absoluteString ?? "-"
+        var out = "\n[API] ── REQUEST ───────────────────────────────────────\n"
+        out += "      \(method)  \(url)\n"
 
         if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
-            print("[API] Headers: \(headers)")
+            out += "      Headers:\n"
+            for key in headers.keys.sorted() {
+                out += "        \(key): \(headers[key]!)\n"
+            }
         }
 
-        if let body = request.httpBody,
-           !body.isEmpty,
-           let bodyString = String(data: body, encoding: .utf8) {
-            print("[API] Body: \(bodyString)")
+        if let body = request.httpBody, !body.isEmpty {
+            out += "      Body:\n"
+            let bodyStr = prettyJSON(body) ?? (String(data: body, encoding: .utf8) ?? "<unreadable>")
+            bodyStr.split(separator: "\n", omittingEmptySubsequences: false)
+                .forEach { out += "        \($0)\n" }
         }
+
+        print(out)
 #endif
     }
 
     private func logResponse(data: Data?, response: URLResponse?, error: Error?, for request: URLRequest) {
 #if DEBUG
-        print("[API] RESPONSE -----------------------------")
-        print("[API] \(request.httpMethod ?? "-") \(request.url?.absoluteString ?? "-")")
+        let method = request.httpMethod ?? "-"
+        let url = request.url?.absoluteString ?? "-"
+        var out = "[API] ── RESPONSE ──────────────────────────────────────\n"
 
         if let http = response as? HTTPURLResponse {
-            print("[API] Status: \(http.statusCode)")
-            print("[API] Response Headers: \(http.allHeaderFields)")
+            out += "      \(method)  \(url)  →  \(http.statusCode)\n"
+            out += "      Headers:\n"
+            let sorted = http.allHeaderFields.sorted { "\($0.key)" < "\($1.key)" }
+            for (key, value) in sorted {
+                out += "        \(key): \(value)\n"
+            }
+        } else {
+            out += "      \(method)  \(url)\n"
         }
 
         if let error {
-            print("[API] Error: \(error.localizedDescription)")
+            out += "      Error: \(error.localizedDescription)\n"
         }
 
-        if let data,
-           !data.isEmpty,
-           let responseBody = String(data: data, encoding: .utf8) {
-            print("[API] Response Body: \(responseBody)")
+        if let data, !data.isEmpty {
+            out += "      Body:\n"
+            let bodyStr = prettyJSON(data) ?? (String(data: data, encoding: .utf8) ?? "<unreadable>")
+            bodyStr.split(separator: "\n", omittingEmptySubsequences: false)
+                .forEach { out += "        \($0)\n" }
         } else {
-            print("[API] Response Body: <empty>")
+            out += "      Body: <empty>\n"
         }
 
-        print("[API] END ----------------------------------\n")
+        out += "[API] ────────────────────────────────────────────────────\n"
+        print(out)
 #endif
+    }
+
+    private func prettyJSON(_ data: Data) -> String? {
+        guard let obj = try? JSONSerialization.jsonObject(with: data),
+              let pretty = try? JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys]),
+              let str = String(data: pretty, encoding: .utf8) else { return nil }
+        return str
     }
 }
